@@ -5,6 +5,7 @@ import 'package:my_app_shop/models/http_exception.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
+import '../screens/products_overview_screen.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -139,6 +140,7 @@ class _AuthCardState extends State<AuthCard> {
         await Provider.of<Auth>(context, listen: false).signup(
             _authData['email'] as String, _authData['password'] as String);
       }
+      Navigator.of(context).pushReplacementNamed(ProductsOverviewScreen.routeName);
     } on HttpException catch (error) {
       var errorMessage = 'Authentication failed';
       if (error.toString().contains('EMAIL_EXISTS')) {
@@ -154,7 +156,8 @@ class _AuthCardState extends State<AuthCard> {
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
-      const errorMessage = 'Could not authenticate you. Please try again later.';
+      const errorMessage =
+          'Could not authenticate you. Please try again later.';
       _showErrorDialog(errorMessage);
     }
     setState(() {

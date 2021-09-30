@@ -25,8 +25,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<Products>(
-          create: (ctx) => Products(),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (ctx) => Products('asdasfas', []),
+          update: (ctx, authData, previousProduct) => Products(authData.token, previousProduct == null ? [] : previousProduct.items),
         ),
         ChangeNotifierProvider<Cart>(
           create: (ctx) => Cart(),
@@ -38,22 +39,28 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Auth(),
         ),
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          colorScheme: ColorScheme.fromSwatch(accentColor: Colors.greenAccent),
-          fontFamily: 'Lato',
-        ),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
-          CartScreen.routeName: (ctx) => const CartScreen(),
-          OrdersScreen.routeName: (ctx) => const OrdersScreen(),
-          UserProductScreen.routeName: (ctx) => UserProductScreen(),
-          EditProductScreen.routeName: (ctx) => EditProductScreen(),
-        },
-      ),
+      child: Consumer<Auth>(
+          builder: (ctx, authData, _) => MaterialApp(
+                title: 'MyShop',
+                theme: ThemeData(
+                  primarySwatch: Colors.blue,
+                  colorScheme:
+                      ColorScheme.fromSwatch(accentColor: Colors.greenAccent),
+                  fontFamily: 'Lato',
+                ),
+                home: authData.isAuth ? const ProductsOverviewScreen() : AuthScreen(),
+                routes: {
+                  ProductsOverviewScreen.routeName: (ctx) =>
+                      const ProductsOverviewScreen(),
+                  ProductDetailScreen.routeName: (ctx) =>
+                      const ProductDetailScreen(),
+                  CartScreen.routeName: (ctx) => const CartScreen(),
+                  OrdersScreen.routeName: (ctx) => const OrdersScreen(),
+                  UserProductScreen.routeName: (ctx) =>
+                      const UserProductScreen(),
+                  EditProductScreen.routeName: (ctx) => EditProductScreen(),
+                },
+              )),
     );
   }
 }
